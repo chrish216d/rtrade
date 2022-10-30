@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8" />
+    <link rel="stylesheet" type="text/css" href="static/base.css">
+    <script src="static/jquery.min.js"></script>
+    <script src="static/echarts.min.js"></script>
+    <script src="static/main.js"></script>
+</head>
+
+</html>
+
+<body>
+
+    <h1>多空量 (ud-vol)</h1>
+    2000-01-01 至今, A股每个交易日所有上涨股票成交量之和减去下跌股票成交量之和, 除以当日总成交量, 乘以 100.
+    <hr>
+
+    <div id="main" style="width:100%;height:400px;"></div>
+    <script type="module">
+
+        var myChart = echarts.init(document.getElementById('main'));
+
+        $.ajax({
+            'url': './data/udv.json',
+            'type': 'GET',
+            'dataType': 'json',
+            success: function (res) {
+
+                // console.log(res)
+                var data = res
+
+                var option = {
+                    tooltip: {
+                        trigger: 'axis',
+                        position: function (pt) {
+                            return [pt[0], '10%'];
+                        }
+                    },
+                    toolbox: {
+                        feature: {
+                            dataZoom: {
+                                yAxisIndex: 'none'
+                            },
+                            restore: {},
+                        }
+                    },
+                    xAxis: {
+                        data: data.date,
+                        silent: false,
+                        splitline: {
+                            show: false
+                        },
+                        splitArea: {
+                            show: false
+                        },
+                    },
+                    yAxis: {
+                        splitArea: {
+                            show: false
+                        }
+                    },
+                    dataZoom: [
+                        {
+                            type: 'inside',
+                            start: 90,
+                            end: 100
+                        },
+                        {
+                            type: 'slider',
+                            start: 0,
+                            end: 10
+                        }
+                    ],
+                    legend: {
+                        data: ['ud-vol', 'ma5', 'ma10', 'ma20', '上证指数', 'BO-1', 'BO-2', '信号1'],
+                        selected: {
+                            'BO-1': false,
+                            'BO-2': false,
+                            '信号1': false
+                        }
+                    },
+                    series: [
+                        {
+                            name: 'ud-vol',
+                            type: 'bar',
+                            data: data.udv,
+                            large: true,
+                            itemStyle: {
+                            }
+                        },
+                        {
+                            name: 'ma5',
+                            type: 'line',
+                            symbol: 'none',
+                            data: data.udv_5,
+                            large: true,
+                            itemStyle: {
+
+                            }
+                        },
+                        {
+                            name: 'ma10',
+                            type: 'line',
+                            symbol: 'none',
+                            data: data.udv_10,
+                            large: true,
+                            itemStyle: {
+                            }
+                        },
+                        {
+                            name: 'ma20',
+                            type: 'line',
+                            symbol: 'none',
+                            data: data.udv_20,
+                            large: true,
+                            itemStyle: {
+                            }
+                        },
+                        {
+                            name: '上证指数',
+                            type: 'line',
+                            symbol: 'none',
+                            data: data.sh1,
+                            large: true,
+                            itemStyle: {
+                                color: 'dimgray'
+                            }
+                        },
+                        {
+                            name: 'BO-1',
+                            type: 'line',
+                            show: false,
+                            itemStyle: {
+                                color: 'darkred'
+                            },
+                            markLine: {
+                                symbol: ['none', 'none'],
+                                symbolSize: [5, 5],
+                                lineStyle: {
+                                    type: 'dashed',
+                                    color: 'darkred'
+                                },
+                                data: data.bo1
+                            }
+                        },
+                        {
+                            name: 'BO-2',
+                            type: 'line',
+                            show: false,
+                            itemStyle: {
+                                color: 'darkgreen'
+                            },
+                            markLine: {
+                                symbol: ['none', 'none'],
+                                symbolSize: [5, 5],
+                                lineStyle: {
+                                    type: 'dashed',
+                                    color: 'darkgreen'
+                                },
+                                data: data.bo2
+                            }
+                        },
+                        {
+                            name: '信号1',
+                            type: 'line',
+                            show: false,
+                            itemStyle: {
+                                color: 'navy'
+                            },
+                            markLine: {
+                                symbol: ['none', 'arrow'],
+                                symbolSize: [5, 6],
+                                lineStyle: {
+                                    type: 'dashed',
+                                    color: 'navy'
+                                },
+                                data: data.sig1
+                            }
+                        }
+                    ]
+                };
+
+                myChart.setOption(option);
+            },
+            error: function (res) {
+                console.log('err')
+                console.log(res)
+            }
+        })
+    </script>
+
+    <hr>
+
+    <p></p>
+    <h1>图例说明</h1>
+    <div id="legend">
+        <table style="text-align:left;vertical-align:middle;">
+            <tr>
+                <th width="120px">上证指数</th>
+                <td>上证指数收盘价在百分比坐标系 [-120,120] 中显示.</td>
+            </tr>
+            <tr>
+                <th>BO-1</th>
+                <td>ma5 上穿 ma10 和 ma20 的日期.</td>
+            </tr>
+            <tr>
+                <th>BO-2</th>
+                <td>ma5 下穿 ma10 和 ma20 的日期.</td>
+            </tr>
+            <tr>
+                <td>&nbsp;</td>
+            </tr>
+            <tr>
+                <th>信号1 (测试)</th>
+                <td>
+                    1. 最近5日内 ma5 和 ma20 差值的最小值小于 <font style="color:blue;">-30</font>.<br>
+                    2. ma5 上穿 ma20.<br>
+                    3. ma20 跟上一个交易日相比上涨.<br>
+                    4. ma20 绝对值小于 <font style="color:blue;">10</font>.<br>
+                    5. 上证指数当日上涨.<br>
+                    6. 上证指数百分比收盘价小于 <font style="color:blue;">-20</font>.<br>
+                    (1是撞击条件, 235构成反转信号, 46过滤高位)
+                </td>
+            </tr>
+        </table>
+    </div>
+
+
+    <hr>
+    @chrish216 <a href="data/udv_s20000101.csv">历史数据下载(udv_s20000101.csv)</a>
+
+</body>
+
+</html>
