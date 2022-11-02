@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8" />
+    <link rel="stylesheet" type="text/css" href="static/base.css">
+    <link rel="stylesheet" type="text/css" href="static/editormd.preview.min.css">
+    <script src="static/jquery.min.js"></script>
+    <script src="static/echarts.min.js"></script>
+    <script src="static/main.js"></script>
+</head>
+
+</html>
+
+<body>
+
+
+    <script type="text/javascript">
+        $(function () {
+            var editor = editormd("test-editor", {
+                width: "180%",
+                height: "100%",
+                //path: "editormd/lib/"
+            });
+        });
+    </script>
+
+    <h1>
+        双十 (主图叠加)
+    </h1>
+    <font style="color:navy">
+        参考视频 <a href="https://www.bilibili.com/video/BV1ig411h7tR">2022.10.10
+            市场如此多娇，引无数英雄尽折腰。A股美股黄金原油商品策略分享+双十系统升级进阶</a><br>
+        <li>1D(日)图 + 1H(1小时)图 或者 4H(4小时)图 + 30M(30分钟)图 使用, 添加了多空颜色显示, 方便多列看图.</li>
+    </font>
+    <hr>
+    文华
+    <pre class="prettyprint">
+X10:REF(MA(C,10),0),COLORGRAY;
+R:MA(H-L,10),COLORBLUE,NODRAW;
+
+LB:X10-R,COLORYELLOW,DOT;
+UB:X10+R,COLORYELLOW,DOT;
+
+LBX:=REFX(LB,10),COLORGRAY,DOT;
+UBX:=REFX(UB,10),COLORGRAY,DOT;
+
+APX:=REFX(MA((H+L)/2,1),10),COLORBLUE,LINETHICK1;
+PX:=REFX(MA(C,1),10);
+
+DRAWCOLORLINE(PX>=X10,PX,COLORRED,COLORGREEN),LINETHICK2; 
+    </pre>
+
+    通达信
+    <pre class="prettyprint">
+X10:REF(MA(C,10),0),COLORGRAY;
+R:MA(H-L,10),COLORBLUE,NODRAW;
+
+LB:X10-R,COLORYELLOW,DOTLINE;
+UB:X10+R,COLORYELLOW,DOTLINE;
+
+LBX:=REFX(LB,10),COLORGRAY,DOTLINE;
+UBX:=REFX(UB,10),COLORGRAY,DOTLINE;
+        
+APX:=REFX(MA((H+L)/2,1),10),COLORBLUE,LINETHICK1;
+PX:=REFX(MA(C,1),10);
+        
+IF(PX>=X10,PX,DRAWNULL),COLORRED,LINETHICK2;
+IF(PX&lt;X10,PX,DRAWNULL),COLORGREEN,LINETHICK2;  
+    </pre>
+
+    <p></p>
+
+    <h1>
+        结算价 (副图, 文华期货用)
+    </h1>
+    <font style="color:navy">
+        参考视频 <a href="https://www.bilibili.com/video/BV1pf4y1K7u6:">2021.11.24 Royal分享会和结算价策略教学</a><br>
+        <li>包含 LSP(更低结算价) 和 HSP(更高结算价) 两个指标.</li>
+        <li>只能在 1D(日)图 使用, 15:00出结算价.</li>
+    </font>
+    <hr>
+
+    LSP
+    <pre class="prettyprint">
+DRAWCOLORLINE(SETTLE&lt;REF(SETTLE,1) AND SETTLE&lt;REF(L,1),
+SETTLE,COLORGREEN,COLORGRAY),LINETHICK2;
+    </pre>
+
+    HSP
+    <pre class="prettyprint">
+DRAWCOLORLINE(SETTLE>REF(SETTLE,1) AND SETTLE>REF(H,1),
+SETTLE,COLORRED,COLORGRAY),LINETHICK2;
+    </pre>
+
+    <h1>
+        *双五 (主图叠加, <font style="color: red;">测试用</font>)
+    </h1>
+    <font style="color:navy">
+        参考双十做的短周期指标, 30M(30分钟)图 + 2H(2小时)图 使用, 添加了多空颜色显示.
+        想法:
+        <li>参考双十, 1根日图K线=8根1小时线, 短周期:长周期=1:8, 均线周期=10.</li>
+        <li>短周期比例缩小一半, 1根日图K线=4根2小时K线=16根30分钟K线, 短周期:长周期=1:4, 均线周期选择5.</li>
+        <li>两条仓位控制辅助线也左移了5个周期, 日内为主快进快出.</li>
+        <li>开仓方式跟双十一样, 做多下穿上轨减仓, 做空上穿下轨减仓.</li>
+    </font>
+    <hr>
+
+    文华
+
+    <pre class="prettyprint">
+X5:REF(MA(C,5),0),COLORGRAY;
+R:MA(H-L,5),COLORBLUE,NODRAW;
+        
+LB:=X5-R,COLORYELLOW,DOT;
+UB:=X5+R,COLORYELLOW,DOT;
+
+LBX:REFX(LB,5),COLORYELLOW,DOT;
+UBX:REFX(UB,5),COLORYELLOW,DOT;
+        
+APX:=REFX(MA((H+L)/2,1),5),COLORBLUE,LINETHICK1;
+PX:REFX(MA(C,1),5);
+
+DRAWCOLORLINE(PX>=X5,PX,COLORRED,COLORGREEN),LINETHICK2;
+    </pre>
+
+    通达信
+
+    <pre class="prettyprint">
+X5:REF(MA(C,5),0),COLORGRAY;
+R:MA(H-L,5),COLORBLUE,NODRAW;
+
+LB:=X5-R,COLORYELLOW,DOTLINE;
+UB:=X5+R,COLORYELLOW,DOTLINE;
+
+LBX:REFX(LB,5),COLORYELLOW,DOTLINE;
+UBX:REFX(UB,5),COLORYELLOW,DOTLINE;
+        
+APX:=REFX(MA((H+L)/2,1),5),COLORBLUE,LINETHICK1;
+PX:REFX(MA(C,1),5);
+
+IF(PX>=X5,PX,DRAWNULL),COLORRED,LINETHICK2;
+IF(PX&lt;X5,PX,DRAWNULL),COLORGREEN,LINETHICK2; 
+    </pre>
+
+</body>
+
+</html>

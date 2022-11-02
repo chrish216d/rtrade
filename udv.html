@@ -14,16 +14,18 @@
 <body>
 
     <h1>多空量 (ud-vol)</h1>
-    2000-01-01 至今, A股每个交易日所有上涨股票成交量之和减去下跌股票成交量之和, 除以当日总成交量, 乘以 100.
+    参考视频 <a href="https://www.bilibili.com/video/BV1Ce411G74M">2022.10.31
+        市场不要英雄，不要情怀，顺势为王！+A股及期货市场策略+TDV市场资金流数据开发完毕</a><br>
+    <li>2000-01-01 至今, A股每个交易日所有上涨股票成交量之和减去下跌股票成交量之和, 除以当日总成交量, 乘以 100.</li>
     <hr>
 
-    <div id="main" style="width:100%;height:400px;"></div>
+    <div id="main" style="width:100%;height:600px;"></div>
     <script type="module">
 
         var myChart = echarts.init(document.getElementById('main'));
 
         $.ajax({
-            'url': './data/udv.json',
+            'url': './data/vis_udv.json',
             'type': 'GET',
             'dataType': 'json',
             success: function (res) {
@@ -35,7 +37,7 @@
                     tooltip: {
                         trigger: 'axis',
                         position: function (pt) {
-                            return [pt[0], '10%'];
+                            return [pt[0], '1%'];
                         }
                     },
                     toolbox: {
@@ -78,7 +80,8 @@
                         selected: {
                             'BO-1': false,
                             'BO-2': false,
-                            '信号1': false
+                            '上证指数': false,
+                            '信号1': false,
                         }
                     },
                     series: [
@@ -94,7 +97,7 @@
                             name: 'ma5',
                             type: 'line',
                             symbol: 'none',
-                            data: data.udv_5,
+                            data: data.udv5,
                             large: true,
                             itemStyle: {
 
@@ -104,7 +107,7 @@
                             name: 'ma10',
                             type: 'line',
                             symbol: 'none',
-                            data: data.udv_10,
+                            data: data.udv10,
                             large: true,
                             itemStyle: {
                             }
@@ -113,7 +116,7 @@
                             name: 'ma20',
                             type: 'line',
                             symbol: 'none',
-                            data: data.udv_20,
+                            data: data.udv20,
                             large: true,
                             itemStyle: {
                             }
@@ -229,7 +232,8 @@
 
 
     <hr>
-    @chrish216 <a href="data/udv_s20000101.csv">历史数据下载(udv_s20000101.csv)</a>
+    <font style="color:crimson;font-weight:600;">已更新至 2022-11-01</font> @chrish216 <a
+        href="data/udv_s20000101.csv">历史数据下载(udv_s20000101.csv)</a>
 
 </body>
 

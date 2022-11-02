@@ -1,0 +1,26 @@
+html * {
+    font-family: 'verdana';
+    font-size: 10px;
+}
+
+hr {
+    padding: 0;
+    opacity: 0.2;
+}
+
+h1 {
+    font-size: 14px;
+    margin-bottom: 5px;
+}
+
+table {
+    border: 0;
+    text-align: left;
+    vertical-align: top;
+}
+
+th {
+    width: 80px;
+    text-align: left;
+    vertical-align: top;  
+}
