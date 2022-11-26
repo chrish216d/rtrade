@@ -44,19 +44,31 @@ def vis_udv_data(path, add_sh1=False):
     df['df5_20_min5'] = df['df5_20'].rolling(5).min()
 
     # break-out-1: 5日金叉10日和20日
+    '''
     bo1 = df[
-        (df['udv5_r'] < df['udv10_r']) &
-        (df['udv5_r'] < df['udv10_r']) &
-        (df['udv5'] > df['udv10']) &
-        (df['udv5'] > df['udv20'])
+        (df['udv5_r'] < df['udv10_r']) & (df['udv5_r'] < df['udv20_r']) &
+        (df['udv5'] > df['udv10']) & (df['udv5'] > df['udv20'])
     ]
     # break-out-2: 5日死叉10日和20日
     bo2 = df[
-        (df['udv5_r'] > df['udv10_r']) &
-        (df['udv5_r'] > df['udv10_r']) &
-        (df['udv5'] < df['udv10']) &
-        (df['udv5'] < df['udv20'])
+        (df['udv5_r'] > df['udv10_r']) & (df['udv5_r'] > df['udv20_r']) &
+        (df['udv5'] < df['udv10']) & (df['udv5'] < df['udv20'])
     ]
+    '''
+
+    # 连续10天量柱>-10/
+    df['du_0'] = df['udv'].apply(lambda x: 1 if x > 0 else 0)
+    df['du_n10'] = df['udv'].apply(lambda x: 1 if x > -10 else 0)
+    df['tu_0'] = df['du_0'].rolling(10).sum()
+    df['tu_n10'] = df['du_n10'].rolling(10).sum()
+    tu1d = df[
+        (df['tu_0'] >= 9)
+    ]
+    tu2d = df[
+        (df['tu_n10'] >= 9)
+    ]
+
+    # hit-1: 20日撞击-10
 
     output = {
         'date': list(df['date'].values),
@@ -64,8 +76,12 @@ def vis_udv_data(path, add_sh1=False):
         'udv5': to_no_nan_list(df['udv5'].values),
         'udv10': to_no_nan_list(df['udv10'].values),
         'udv20': to_no_nan_list(df['udv20'].values),
-        'bo1': to_markline_data(bo1['date'].values),
-        'bo2': to_markline_data(bo2['date'].values),
+        # 'bo1': to_markline_data(bo1['date'].values),
+        # 'bo2': to_markline_data(bo2['date'].values),
+        'tu_0': to_no_nan_list(df['tu_0'].values),
+        'tu_n10': to_no_nan_list(df['tu_n10'].values),
+        'tu1d': to_markline_data(tu1d['date'].values),
+        'tu2d': to_markline_data(tu2d['date'].values),
     }
 
     if add_sh1:
@@ -111,4 +127,4 @@ def to_markline_data(data):
 
 if __name__ == '__main__':
     path = 'data/udv_s20000101.csv'
-    vis_udv_data(path)
+    vis_udv_data(path, add_sh1=False)

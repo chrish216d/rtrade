@@ -72,27 +72,22 @@ IF(PX&lt;X10,PX,DRAWNULL),COLORGREEN,LINETHICK2;
     <p></p>
 
     <h1>
-        结算价 (副图, 文华期货用)
+        结算价 (主图叠加, 文华期货用)
     </h1>
     <font style="color:navy">
         参考视频 <a href="https://www.bilibili.com/video/BV1pf4y1K7u6:">2021.11.24 Royal分享会和结算价策略教学</a><br>
-        <li>包含 LSP(更低结算价) 和 HSP(更高结算价) 两个指标.</li>
         <li>只能在 1D(日)图 使用, 15:00出结算价.</li>
     </font>
     <hr>
 
-    LSP
+    TSP
     <pre class="prettyprint">
-DRAWCOLORLINE(SETTLE&lt;REF(SETTLE,1) AND SETTLE&lt;REF(L,1),
-SETTLE,COLORGREEN,COLORGRAY),LINETHICK2;
+STICKLINE(1,SETTLE,SETTLE,COLORGRAY,0);
+STICKLINE(SETTLE>REF(SETTLE,1) AND SETTLE>REF(H,1),SETTLE,SETTLE,COLORRED,0);
+STICKLINE(SETTLE&lt;REF(SETTLE,1) AND SETTLE&lt;REF(L,1),SETTLE,SETTLE,COLORGREEN,0);
     </pre>
 
-    HSP
-    <pre class="prettyprint">
-DRAWCOLORLINE(SETTLE>REF(SETTLE,1) AND SETTLE>REF(H,1),
-SETTLE,COLORRED,COLORGRAY),LINETHICK2;
-    </pre>
-
+<!--
     <h1>
         *双五 (主图叠加, <font style="color: red;">测试用</font>)
     </h1>
@@ -142,7 +137,7 @@ PX:REFX(MA(C,1),5);
 IF(PX>=X5,PX,DRAWNULL),COLORRED,LINETHICK2;
 IF(PX&lt;X5,PX,DRAWNULL),COLORGREEN,LINETHICK2; 
     </pre>
-
+-->
 </body>
 
 </html>

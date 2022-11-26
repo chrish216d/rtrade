@@ -41,7 +41,7 @@ def update_udv_proc():
     # TODO
     # update udv before 14:00
     curr_hr = time.localtime().tm_hour
-    if curr_hr < 16:
+    if curr_hr < 16 or True:
         update_udv1()
     else:  # add sh1 index after 14:00
         if update_test():
