@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8" />
+    <link rel="stylesheet" type="text/css" href="static/base.css">
+    <script src="static/jquery.min.js"></script>
+    <script src="static/echarts.min.js"></script>
+</head>
+
+<body>
+
+    <h1>测试 udv2</h1>
+    <li>将上涨和下跌成交量分别按占总成交量比例和占自身流通市值比例排序, 取前20只股票(过滤了ST和科创板).</li>
+    <li>
+        <font style="color:crimson;font-weight:600;">交易日 2022-11-25</font>
+    </li>
+    <hr>
+
+    <table>
+        <tr>
+            <td>
+                <table id="tb_udf1">
+                    <caption>A 上涨股票中按占总成交量比例排前20</caption>
+                </table>
+            </td>
+            <td>
+                <table id="tb_udf2">
+                    <caption>B 上涨股票中按占流通市值比例排前20</caption>
+                </table>
+            </td>
+        </tr>
+    </table>
+
+    <hr>
+
+    <table>
+        <tr>
+            <td>
+                <table id="tb_ddf1">
+                    <caption style="color: darkgreen;">C 下跌股票中按占总成交量比例排前20</caption>
+                </table>
+            </td>
+            <td>
+                <table id="tb_ddf2">
+                    <caption style="color: darkgreen;">D 下跌股票中按占流通市值比例排前20</caption>
+                </table>
+            </td>
+        </tr>
+    </table>
+
+    <hr>
+
+    <p></p>
+    <table style="text-align:left;vertical-align:middle;">
+
+        <tr>
+            <th>策略1</th>
+            <td>周一买入上周五选出的前10只股票, 下周一卖出下跌的股票, 再从周五新选出的股票中按顺序补满10只股票(涨停不买).</td>
+        </tr>
+        <tr>
+            <th>策略2</th>
+            <td>周一买入上周五选出的前10只股票, 下周一全部卖出, 再买入周五新选出的前10只股票(涨停不买).</td>
+        </tr>
+        <tr>
+            <th>仓位</th>
+            <td>平均分配, 10只股票每只10%.</td>
+        </tr>
+        <tr>
+            <td>&nbsp;</td>
+        </tr>
+
+    </table>
+
+
+    <hr>
+    @chrish216
+
+
+    <script type="module">
+
+        $.ajax({
+            'url': './data/udv2_latest.json',
+            'type': 'GET',
+            'dataType': 'json',
+            success: function (res) {
+                var data = res
+                console.log(data)
+
+                var udf1_html = '<tr>'
+                udf1_html += '<th style="width:40px;">排名</th>'
+                udf1_html += '<th>代码</th>'
+                udf1_html += '<th>名称</th>'
+                udf1_html += '<th>涨跌幅 %</th>'
+                udf1_html += '<th>占总成交量 %</th>'
+                udf1_html += '</tr>'
+
+                var udf2_html = '<tr>'
+                udf2_html += '<th style="width:40px;">排名</th>'
+                udf2_html += '<th>代码</th>'
+                udf2_html += '<th>名称</th>'
+                udf2_html += '<th>涨跌幅 %</th>'
+                udf2_html += '<th>占流通市值 %</th>'
+                udf2_html += '</tr>'
+
+                var ddf1_html = '<tr>'
+                ddf1_html += '<th style="width:40px;">排名</th>'
+                ddf1_html += '<th>代码</th>'
+                ddf1_html += '<th>名称</th>'
+                ddf1_html += '<th>涨跌幅 %</th>'
+                ddf1_html += '<th>占总成交量 %</th>'
+                ddf1_html += '</tr>'
+
+                var ddf2_html = '<tr>'
+                ddf2_html += '<th style="width:40px;">排名</th>'
+                ddf2_html += '<th>代码</th>'
+                ddf2_html += '<th>名称</th>'
+                ddf2_html += '<th>涨跌幅 %</th>'
+                ddf2_html += '<th>占流通市值 %</th>'
+                ddf2_html += '</tr>'
+
+                for (let i = 0; i < 20; i++) {
+
+                    udf1_html += '<tr>'
+                    udf1_html += '<td style="color:gray;">' + (i + 1) + '</td>'
+                    udf1_html += '<td>' + data.udf1_code[i] + '</td>'
+                    udf1_html += '<td>' + data.udf1_name[i] + '</td>'
+                    udf1_html += '<td style="color:darkred;">' + data.udf1_chg[i] + '</td>'
+                    udf1_html += '<td>' + data.udf1_tvp[i] + '</td>'
+                    udf1_html += '</tr>'
+
+                    udf2_html += '<tr>'
+                    udf2_html += '<td style="color:gray;">' + (i + 1) + '</td>'
+                    udf2_html += '<td>' + data.udf2_code[i] + '</td>'
+                    udf2_html += '<td>' + data.udf2_name[i] + '</td>'
+                    udf2_html += '<td style="color:darkred;">' + data.udf2_chg[i] + '</td>'
+                    udf2_html += '<td>' + data.udf2_tvr[i] + '</td>'
+                    udf2_html += '</tr>'
+
+                    ddf1_html += '<tr>'
+                    ddf1_html += '<td style="color:gray;">' + (i + 1) + '</td>'
+                    ddf1_html += '<td>' + data.ddf1_code[i] + '</td>'
+                    ddf1_html += '<td>' + data.ddf1_name[i] + '</td>'
+                    ddf1_html += '<td style="color:darkgreen;">' + data.ddf1_chg[i] + '</td>'
+                    ddf1_html += '<td>' + data.ddf1_tvp[i] + '</td>'
+                    ddf1_html += '</tr>'
+
+                    ddf2_html += '<tr>'
+                    ddf2_html += '<td style="color:gray;">' + (i + 1) + '</td>'
+                    ddf2_html += '<td>' + data.ddf2_code[i] + '</td>'
+                    ddf2_html += '<td>' + data.ddf2_name[i] + '</td>'
+                    ddf2_html += '<td style="color:darkgreen;">' + data.ddf2_chg[i] + '</td>'
+                    ddf2_html += '<td>' + data.ddf2_tvr[i] + '</td>'
+                    ddf2_html += '</tr>'
+                }
+                $('#tb_udf1').append(udf1_html)
+                $('#tb_udf2').append(udf2_html)
+                $('#tb_ddf1').append(ddf1_html)
+                $('#tb_ddf2').append(ddf2_html)
+            },
+            error: function (res) {
+                console.log('err')
+                console.log(res)
+            }
+        })
+
+    </script>
+
+</body>
+
+</html>
